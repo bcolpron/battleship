@@ -23,13 +23,44 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
 <script>
 
+function Board() {
+    this.ships = [];
+    this.view = $(".board");
+}
+
+Board.prototype.add = function(ship) {
+    this.ships.push(ship);
+    this.view.append(ship.view);
+}
+
+Board.prototype.randomPlace = function(s) {
+    var that = this;
+    function overlapsAny(ship) {
+        var ext = ship.extents();
+        return !!that.ships.find(function(s) {
+            for (var x=0; x < ext.x; ++x) {
+                for (var y=0; y < ext.y; ++y) {
+                    if (s.hits(ship.x + x, ship.y + y)) return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    do {
+        if (random(2)) s.rotate();
+        var ext = s.extents();
+        s.place(random(11-ext.x), random(11-ext.y));
+    } while(overlapsAny(s));
+    this.add(s);
+}
+
 function Ship(size) {
     this.x = 0;
     this.y = 0;
     this.size = size;
     this.orientation = this.HORIZONTAL;
-    a = this.view = $('<img src="images/ship' + size + '.png" class="ship">');
-    $(".board").append(this.view);
+    this.view = $('<img src="images/ship' + size + '.png" class="ship">');
 }
 
 Ship.prototype.HORIZONTAL = 0;
@@ -68,18 +99,15 @@ function random(n) {
     return Math.floor(Math.random()*n);
 }
 
-function place(s) {
-    if (random(2)) s.rotate();
-    var ext = s.extents();
-    s.place(random(11-ext.x), random(11-ext.y));
-}
 
 $(function(){
-    //place(new Ship(2));
-    //place(new Ship(3));
-    //place(new Ship(3));
-    //place(new Ship(4));
-    place(s = new Ship(5));
+    var board = new Board();
+    board.randomPlace(new Ship(2));
+    board.randomPlace(new Ship(3));
+    board.randomPlace(new Ship(3));
+    board.randomPlace(new Ship(4));
+    board.randomPlace(new Ship(5));
+
 
 });
 </script>
