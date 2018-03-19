@@ -1,0 +1,86 @@
+<html>
+<head>
+<title>Battleship</title>
+<link rel="stylesheet" href="css/style.css">
+<head>
+<body>
+
+<div class="board">
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
+
+</div>
+</body>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+<script>
+
+function Ship(size) {
+    this.x = 0;
+    this.y = 0;
+    this.size = size;
+    this.orientation = this.HORIZONTAL;
+    a = this.view = $('<img src="images/ship' + size + '.png" class="ship">');
+    $(".board").append(this.view);
+}
+
+Ship.prototype.HORIZONTAL = 0;
+Ship.prototype.VERTICAL = 1;
+
+Ship.prototype.rotate = function() {
+    if (this.orientation == this.HORIZONTAL) {
+        this.view.css({"transform-origin": "16px 16px",
+            transform: "translate(0," + (this.size-1)*32 + "px) rotate(270deg)"});
+        this.orientation = this.VERTICAL;
+    } else {
+        this.view.css({"transform-origin": "", transform: ""});
+        this.orientation = this.HORIZONTAL;
+    }     
+    return this;
+}
+
+Ship.prototype.extents = function() {
+    return this.orientation == this.HORIZONTAL ?
+        {x: this.size, y: 1} : {x: 1, y: this.size};
+}
+
+Ship.prototype.place = function(x,y) {
+    this.x = x; this.y = y;
+    this.view.css({left: x*32 + "px", top: y*32 + "px"});
+    return this;
+}
+
+Ship.prototype.hits = function(x,y) {
+    var ext = this.extents();
+    return x >= this.x && x < this.x + ext.x
+        && y >= this.y && y < this.y + ext.y;
+}
+
+function random(n) {
+    return Math.floor(Math.random()*n);
+}
+
+function place(s) {
+    if (random(2)) s.rotate();
+    var ext = s.extents();
+    s.place(random(11-ext.x), random(11-ext.y));
+}
+
+$(function(){
+    //place(new Ship(2));
+    //place(new Ship(3));
+    //place(new Ship(3));
+    //place(new Ship(4));
+    place(s = new Ship(5));
+
+});
+</script>
+</html>

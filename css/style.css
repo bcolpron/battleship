@@ -1,0 +1,23 @@
+.tile {
+    width: 30px;
+    height: 30px;
+    background-color: darkturquoise;
+    border: 1px;
+    border-style: solid;
+    border-color: blue;
+    display: inline-block;
+}
+.board {
+    border: 1px;
+    border-style: solid;
+    border-color: blue;
+    display: inline-block;
+    width: 320px;
+    margin: 0 auto;
+    position: relative;
+}
+.ship {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
