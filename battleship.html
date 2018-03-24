@@ -98,7 +98,6 @@ function Ship(size) {
     this.y = 0;
     this.size = size;
     this.orientation = this.HORIZONTAL;
-    this.view = $('<img src="images/ship' + size + '.png" class="ship">');
 }
 
 Ship.prototype.HORIZONTAL = 0;
@@ -106,11 +105,8 @@ Ship.prototype.VERTICAL = 1;
 
 Ship.prototype.rotate = function() {
     if (this.orientation == this.HORIZONTAL) {
-        this.view.css({"transform-origin": "16px 16px",
-            transform: "translate(0," + (this.size-1)*32 + "px) rotate(270deg)"});
         this.orientation = this.VERTICAL;
     } else {
-        this.view.css({"transform-origin": "", transform: ""});
         this.orientation = this.HORIZONTAL;
     }     
     return this;
@@ -123,7 +119,6 @@ Ship.prototype.extents = function() {
 
 Ship.prototype.place = function(x,y) {
     this.x = x; this.y = y;
-    this.view.css({left: x*32 + "px", top: y*32 + "px"});
     return this;
 }
 
