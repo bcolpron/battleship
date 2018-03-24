@@ -62,12 +62,24 @@ Board.prototype.randomPlace = function(s) {
     return s;
 }
 
-function BoardView(selector) {
+Board.prototype.hit = function(x,y) {
+    return !!this.ships.find(function(s) {
+        return s.hits(x,y);
+    });
+}
+
+function BoardView(selector, board) {
+    this.board = board;
     this.ships = [];
     this.view = $(selector);
-    this.view.append($('<div class="tile"/>'.repeat(100)));
+    for (var x=0; x < 10; x++) {
+        for (var y=0; y < 10; y++) {
+            this.view.append($('<div class="tile"/>').data("pos", {x:x,y:y}));
+        }
+    }
     this.view.on("click", ".free-target-tile", function() {
-        $(this).append($('<div class="missed-marker"></>'))
+        pos = $(this).data("pos");
+        $(this).append($('<div class="' + (board.hit(pos.x,pos.y) ? "hit" : "missed") + '-marker"></>'))
             .removeClass("free-target-tile");
     });
 }
@@ -139,19 +151,23 @@ function random(n) {
 
 
 $(function(){
-    var board = new BoardView("#remoteboard");
-    board.resetTargets();
+    var remote = new Board();
+    remote.randomPlace(new Ship(2));
+    remote.randomPlace(new Ship(3));
+    remote.randomPlace(new Ship(3));
+    remote.randomPlace(new Ship(4));
+    remote.randomPlace(new Ship(5));
+
+    var remoteView = new BoardView("#remoteboard",remote);
+    remoteView.resetTargets();
 
     var board = new Board();
-    var boardView = new BoardView("#localboard");
+    var boardView = new BoardView("#localboard", board);
     boardView.add(new ShipView(board.randomPlace(new Ship(2))));
     boardView.add(new ShipView(board.randomPlace(new Ship(3))));
     boardView.add(new ShipView(board.randomPlace(new Ship(3))));
     boardView.add(new ShipView(board.randomPlace(new Ship(4))));
     boardView.add(new ShipView(board.randomPlace(new Ship(5))));
-
-
-
 });
 </script>
 </html>

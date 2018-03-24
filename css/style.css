@@ -21,6 +21,15 @@
     left: 8px;
     top: 8px;
 }
+.hit-marker {
+    background-color: red;
+    border-radius: 50%;
+    width:16px;
+    height:16px;
+    position: absolute;
+    left: 8px;
+    top: 8px;
+}
 .board {
     border: 1px;
     border-style: solid;
