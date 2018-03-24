@@ -5,32 +5,50 @@
 <head>
 <body>
 
-<div class="board">
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-    <div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div><div class="tile"/></div>
-
+<div class="board" id="remoteboard">
 </div>
+
+<div class="board" id="localboard">
+</div>
+
 </body>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
 <script>
 
-function Board() {
+function inherit(base, ctor){
+    var derived = function() {
+        var that = this;
+        this.base = function() {
+            base.apply(that, arguments);
+        }
+        ctor.apply(this, arguments);
+    };
+    derived.prototype = _.create(base.prototype, {
+        'constructor': derived
+    })
+    return derived;
+}
+
+
+function Board(selector) {
     this.ships = [];
-    this.view = $(".board");
+    this.view = $(selector);
+    this.view.append($('<div class="tile"/>'.repeat(100)));
+
+    this.view.on("click", ".free-target-tile", function() {
+        $(this).append($('<div class="missed-marker"></>'))
+            .removeClass("free-target-tile");
+    });
 }
 
 Board.prototype.add = function(ship) {
     this.ships.push(ship);
     this.view.append(ship.view);
+}
+
+Board.prototype.resetTargets = function() {
+    this.view.find(".tile").addClass("free-target-tile");
 }
 
 Board.prototype.randomPlace = function(s) {
@@ -101,7 +119,10 @@ function random(n) {
 
 
 $(function(){
-    var board = new Board();
+    var board = new Board("#remoteboard");
+    board.resetTargets();
+
+    var board = new Board("#localboard");
     board.randomPlace(new Ship(2));
     board.randomPlace(new Ship(3));
     board.randomPlace(new Ship(3));

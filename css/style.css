@@ -6,6 +6,20 @@
     border-style: solid;
     border-color: blue;
     display: inline-block;
+    position: relative;
+
+}
+.free-target-tile:hover { 
+    background-color: yellow;
+}
+.missed-marker {
+    background-color: white;
+    border-radius: 50%;
+    width:16px;
+    height:16px;
+    position: absolute;
+    left: 8px;
+    top: 8px;
 }
 .board {
     border: 1px;
