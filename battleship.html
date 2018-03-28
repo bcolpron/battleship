@@ -14,22 +14,8 @@
 </body>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.5/lodash.core.min.js"></script>
 <script>
-
-function inherit(base, ctor){
-    var derived = function() {
-        var that = this;
-        this.base = function() {
-            base.apply(that, arguments);
-        }
-        ctor.apply(this, arguments);
-    };
-    derived.prototype = _.create(base.prototype, {
-        'constructor': derived
-    })
-    return derived;
-}
-
 
 function Board() {
     this.ships = [];
@@ -63,8 +49,8 @@ Board.prototype.randomPlace = function(s) {
 }
 
 Board.prototype.hit = function(x,y) {
-    return !!this.ships.find(function(s) {
-        return s.hits(x,y);
+    return this.ships.find(function(s) {
+        return s.hit(x,y);
     });
 }
 
@@ -72,15 +58,20 @@ function BoardView(selector, board) {
     this.board = board;
     this.ships = [];
     this.view = $(selector);
-    for (var x=0; x < 10; x++) {
-        for (var y=0; y < 10; y++) {
+    for (var y=0; y < 10; y++) {
+        for (var x=0; x < 10; x++) {
             this.view.append($('<div class="tile"/>').data("pos", {x:x,y:y}));
         }
     }
+    var that = this;
     this.view.on("click", ".free-target-tile", function() {
-        pos = $(this).data("pos");
-        $(this).append($('<div class="' + (board.hit(pos.x,pos.y) ? "hit" : "missed") + '-marker"></>'))
+        var pos = $(this).data("pos");
+        var hit = board.hit(pos.x,pos.y);
+        $(this).append($('<div class="' + (hit ? "hit" : "missed") + '-marker"></>'))
             .removeClass("free-target-tile");
+        if (hit && hit.isSunk()) {
+            that.add(new ShipView(hit));
+        }
     });
 }
 
@@ -98,6 +89,7 @@ function Ship(size) {
     this.y = 0;
     this.size = size;
     this.orientation = this.HORIZONTAL;
+    this._hits = {};
 }
 
 Ship.prototype.HORIZONTAL = 0;
@@ -126,6 +118,18 @@ Ship.prototype.hits = function(x,y) {
     var ext = this.extents();
     return x >= this.x && x < this.x + ext.x
         && y >= this.y && y < this.y + ext.y;
+}
+
+Ship.prototype.hit = function(x,y) {
+    if (this.hits(x,y)) {
+        this._hits[[x,y]] = true;
+        return true;
+    }
+    return false;
+}
+
+Ship.prototype.isSunk = function() {
+    return _.size(this._hits) >= this.size;
 }
 
 function ShipView(ship) {

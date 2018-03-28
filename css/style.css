@@ -20,6 +20,7 @@
     position: absolute;
     left: 8px;
     top: 8px;
+    z-index: 2;
 }
 .hit-marker {
     background-color: red;
@@ -29,6 +30,7 @@
     position: absolute;
     left: 8px;
     top: 8px;
+    z-index: 2;
 }
 .board {
     border: 1px;
